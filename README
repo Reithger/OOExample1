@@ -1,0 +1,22 @@
+This project is an ongoing example of how to implement a specification for a program and gradually incorporate Object Oriented principles.
+
+At each step a new UML diagram will be generated to describe the state of the program as is, alongside a general explanation of what decisions were made and why.
+
+This project is meant to be a supplemental learning tool for Object Oriented Design (Comp-3721) at Mount Allison University for the Fall semester of 2020.
+
+All work here is done by Ada Clevinger and overseen by the class' professor, Dr. Ricker.
+
+Please feel free to reach out to Ada if you have questions about this, she will try to get back to you as is convenient.
+
+The Problem Statement:
+"This application will support the operations of a technical library for an R&D organization.
+This includes the searching for and lending of technical library materials, including books, DVDs, and technical journals.
+Users will enter their company ids in order to use the system; and they will enter material ID numbers when checking out and returning items.
+
+Each borrower can be lent up to five items.
+Each type of library item can be lent for a different period of time (books 4 weeks, journals 2 weeks, DVDs 1 week).
+If returned after their due date, the library user's organization will be charged a fine, based on the type of item (books $1/day, journals $3/day, DVDs $5/day).
+
+Materials will be lent to employees with no overdue items, fewer than five articles out, and total fines less than $100."
+
+This problem statement is taken from a class example from the 2018 Fall Comp-3721 class that Ada took during her undergrad.
