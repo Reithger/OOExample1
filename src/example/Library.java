@@ -2,6 +2,7 @@ package example;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 /**
  * 
@@ -14,8 +15,11 @@ import java.util.HashMap;
  * Note of interpretation regarding the problem scenario: given that organizations pay fees, I assumed that fines that users accrue are collected to their
  * associated organization, similarly restricting all users belonging to the same organization if, as a group, their fines are too large.
  * 
+ * As of v1.1 this program now has a View component that allows for manipulation of the model and viewing the model data; this is to allow for later
+ * refactoring that will create a Model View Controller architecture to aid in classroom understandings.
+ * 
  * @author Ada Clevinger
- * @version 1.0
+ * @version 1.1
  * 
  * Note: Java has a special form of commenting called Javadoc Comments that allows an API to automatically be generated from your project's classes.
  * It is really useful and neat, most IDEs will use Javadoc info to auto-fill information about the classes you have written. This is useful in larger
@@ -27,7 +31,7 @@ import java.util.HashMap;
  * 		/** - This starts your javadoc comment, and will usually auto-propogate certain fields based on context (such as author or param)
  * 		*\/ - This ends your javadoc comment; if you are reading the source file, I have included a backslash so it would not end this comment too soon.
  * 
- * User them wisely and often! Experiment or read about them to get more info, too.
+ * Use them wisely and often! Experiment or read about them to get more info, too.
  * 
  */
 
@@ -45,6 +49,8 @@ public class Library {
 	public static final int[] CHECKOUT_TIME_LIMIT = new int[] {4, 2, 1};	
 	/** int[] containing the data regarding how much to fine a user per day that each type of material is overdue for (index position denotes type of material)*/
 	public static final int[] OVERDUE_COST = new int[] {1, 3, 5};	
+	/** String[] containing the names of each type of material, the index in the list corresponding to MATERIAL_TYPE_... values*/
+	public static final String[] MATERIAL_TYPE_NAMES = new String[] {"Book", "Journal", "DVD"};
 	/** int value denoting the maximum number of materials that a user can have checked out at once*/
 	private static final int MAXIMUM_CHECKOUT_LIMIT = 5;	
 	/** int value denoting the maximum size of fines that a user's organization can have before they are not permitted to check out materials*/
@@ -110,7 +116,7 @@ public class Library {
 	 */
 	
 	public boolean stockMaterial(int materialId, int type) {
-		if(materials.get(materialId) != null) {
+		if(materials.get(materialId) != null || type < 0 || type >= MATERIAL_TYPE_NAMES.length) {
 			return false;
 		}
 		ArrayList<String> info = configureMaterial(materialId, type);
@@ -238,9 +244,9 @@ public class Library {
 		}
 		boolean pass = false;
 		ArrayList<String> user = users.get(userId);
-		for(int i = 0; i < user.size(); i++) {
+		for(int i = USER_METADATA_COUNT; i < user.size(); i++) {
 			if(user.get(i).equals(""+materialId)) {
-				user.remove(i);
+				user.remove(""+materialId);
 				pass = true;
 			}
 		}
@@ -268,11 +274,139 @@ public class Library {
 	 */
 	
 	public boolean payFee(String organization, int amount) {
-		if(organizationFines.get(organization) - amount < 0 || amount < 0) {
+		if(organizationFines.get(organization) == null || organizationFines.get(organization) - amount < 0 || amount < 0) {
 			return false;
 		}
 		organizationFines.put(organization,  organizationFines.get(organization) - amount);
 		return true;
+	}
+	
+	/**
+	 * This function creates a UI in the command line terminal for the purposes of showing Model View Controller
+	 * architecture in subsequent updates to this collection of code.
+	 * 
+	 */
+	
+	public void displayLibrary() {
+		Scanner sc = new Scanner(System.in);
+		boolean result;
+		System.out.println("Welcome to the Library!\nPlease use the following commands.");
+		libraryInputCommands();
+		String input = sc.nextLine();
+		while(!input.equals("end")) {
+			switch(input.toLowerCase()) {
+				case "view materials":
+					System.out.println("Materials in Library:");
+					for(ArrayList<String> st : materials.values()) {
+						int elapsed = elapsedCheckoutTime(Integer.parseInt(st.get(0)));
+						String checkout = ", Status: " + (elapsed == -1 ? "Available to Check Out" : ("Checked out for " + elapsed + " days."));
+						System.out.println(" - ID: " + st.get(0) + ", Type: " + MATERIAL_TYPE_NAMES[Integer.parseInt(st.get(1))] + checkout);
+					}
+					break;
+				case "view users":
+					System.out.println("Users Registered to Library:");
+					for(ArrayList<String> st : users.values()) {
+						System.out.print(" - ID: " + st.get(0) + ", Organization: \"" + st.get(1) + "\", Checked Out Materials: ");
+						if(st.size() == USER_METADATA_COUNT) {
+							System.out.println("None");
+						}
+						else {
+							for(int i = USER_METADATA_COUNT; i < st.size(); i++) {
+								System.out.print(st.get(i) + (i + 1 == st.size() ? ".\n" : ", "));
+							}
+						}
+					}
+					break;
+				case "view organizations":
+					System.out.println("Organizations Registered to Library");
+					for(String st : organizationFines.keySet()) {
+						System.out.println(" - Title: " + st + ", Fines: $" + organizationFines.get(st));
+					}
+					break;
+				case "add material":
+					System.out.println("Please provide the Material ID Number and the Material Type (Book, DVD, or Journal) in a single, space separated, line.");
+					input = sc.nextLine();
+					result = stockMaterial(Integer.parseInt(input.split(" ")[0]), indexOf(MATERIAL_TYPE_NAMES, input.split(" ")[1]));
+					if(result) {
+						System.out.println("Material successfully stocked, please use the command 'view materials' to confirm.");
+					}
+					else {
+						System.out.println("System failed to add Material, please try again.");
+					}
+					break;
+				case "add user":
+					System.out.println("Please provide the User ID Number and their Organization in a single, space separated, line.");
+					input = sc.nextLine();
+					result = enrolUser(Integer.parseInt(input.split(" ")[0]), input.split(" ")[1]);
+					if(result) {
+						System.out.println("User successfully enrolled, please use the command 'view users' to confirm.");
+					}
+					else {
+						System.out.println("System failed to add User, please try again.");
+					}
+					break;
+				case "add organization":
+					System.out.println("Please provide the Organization Name.");
+					input = sc.nextLine();
+					result = addOrganization(input.split(" ")[0]);
+					if(result) {
+						System.out.println("Organization successfully added, please use the command 'view organizations' to confirm.");
+					}
+					else {
+						System.out.println("System failed to add Organization, please try again.");
+					}
+					break;
+				case "checkout material":
+					System.out.println("Please provide the User ID Number that is checking the Material out and Material ID Number of the Material being checked out in a single, space separated, line.");
+					input = sc.nextLine();
+					result = checkoutMaterial(Integer.parseInt(input.split(" ")[0]), Integer.parseInt(input.split(" ")[1]));
+					if(result) {
+						System.out.println("Material successfully checked out, please use the command 'view materials' to confirm.");
+					}
+					else {
+						System.out.println("System failed to checkout Material, please try again.");
+					}
+					break;
+				case "return material":
+					System.out.println("Please provide the User ID Number that checked the Material out and Material ID Number of the Material being returned in a single, space separated, line.");
+					input = sc.nextLine();
+					result = returnMaterial(Integer.parseInt(input.split(" ")[0]), Integer.parseInt(input.split(" ")[1]));
+					if(result) {
+						System.out.println("Material successfully returned, please use the command 'view materials' to confirm.");
+					}
+					else {
+						System.out.println("System failed to return Material, please try again.");
+					}
+					break;
+				case "pay fee":
+					System.out.println("Please provide the Organization name and the amount being paid to their account on separate lines.");
+					result = payFee(sc.nextLine(), Integer.parseInt(sc.nextLine()));
+					if(result) {
+						System.out.println("Fee successfully paid, please use the command 'view organizations' to confirm the account balance.");
+					}
+					else {
+						System.out.println("System failed to pay Fee, please try again.");
+					}
+					break;
+				case "help":
+					libraryInputCommands();
+					break;
+				default:
+					System.out.println("Input command was not recognized, please try again.");
+					break;
+			}
+			input = sc.nextLine();
+		}
+		sc.close();
+	}
+	
+	private void libraryInputCommands() {
+		System.out.println("View:\n - Users\n - Materials\n - Organizations");
+		System.out.println("Add:\n - User\n - Material\n - Organization");
+		System.out.println("Checkout/Return Material");
+		System.out.println("Pay Fee");
+		System.out.println("For example, the command 'View Materials' would display the Materials in the Library.");
+		System.out.println("Type 'help' to see these commands again.");
 	}
 	
 //---  Getter Methods   -----------------------------------------------------------------------
@@ -327,7 +461,7 @@ public class Library {
 	
 	private boolean validateCheckout(ArrayList<String> info, int materialId) {
 		String org = info.get(USER_INDEX_ORG);
-		if(info.size() <= USER_METADATA_COUNT + MAXIMUM_CHECKOUT_LIMIT && organizationFines.get(org) <= MAXIMUM_CHECKOUT_FINES){
+		if(info.size() <= USER_METADATA_COUNT + MAXIMUM_CHECKOUT_LIMIT && organizationFines.get(org) <= MAXIMUM_CHECKOUT_FINES && materials.get(materialId).get(MATERIAL_INDEX_CHECKOUT).equals(MATERIAL_AVAILABLE)){
 			for(int i = USER_METADATA_COUNT; i < info.size(); i++) {
 				int days = elapsedCheckoutTime(Integer.parseInt(info.get(i)));
 				if(days != -1 && days > MAXIMUM_CHECKOUT_LIMIT) {
@@ -391,6 +525,17 @@ public class Library {
 		material.add("" + type);
 		material.add(MATERIAL_AVAILABLE);
 		return material;
+	}
+	
+//---  Mechanics   ----------------------------------------------------------------------------
+	
+	private int indexOf(String[] array, String key) {
+		for(int i = 0; i < array.length; i++) {
+			if(array[i].equals(key)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 	
 }

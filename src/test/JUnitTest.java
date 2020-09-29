@@ -1,8 +1,8 @@
 package test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
 import example.Library;
 
 /**
@@ -79,7 +79,7 @@ class JUnitTest {
 		dvd.add("" + (NOW - OVERDUE_TIME_GOOFUS * DURATION_DAY));
 		
 		//Start populating our instance of Library with users and materials, testing that the functions succeed (return true)
-		//Note: The functions return true because I programmed them to do so in case of bad input, such as enrolling two users with the same id
+		//Note: The functions return a boolean because I programmed them to do so in case of bad input, such as enrolling two users with the same id
 		
 		assertTrue(instance.stockMaterial(1, dvd));
 		assertTrue(instance.stockMaterial(2, book));
@@ -131,7 +131,9 @@ class JUnitTest {
 
 		//Test that after paying a fine, Goofus can now check out a book
 		
-		assertTrue(instance.checkoutMaterial(7, 2));
+		assertTrue(instance.checkoutMaterial(420, 1));
+		
+		instance.displayLibrary();
 	}
 
 }
