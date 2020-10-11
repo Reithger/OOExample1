@@ -1,4 +1,4 @@
-package example;
+package version1.example;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,9 +1,11 @@
-package test;
+package version1.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+
+import version1.example.Library;
+
 import java.util.ArrayList;
-import example.Library;
 
 /**
  * 
