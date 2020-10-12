@@ -1,8 +1,8 @@
-package version2.catalogue;
+package version3.model.catalogue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import version2.organization.Organization;
+import version3.model.organization.Organization;
 
 /**
  * This class extends the Catalogue class to provide Catalogue services for managing Organization

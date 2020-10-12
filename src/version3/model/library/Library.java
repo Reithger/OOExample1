@@ -1,9 +1,9 @@
-package version2.library;
+package version3.model.library;
 
-import version2.catalogue.MaterialsCatalogue;
-import version2.catalogue.OrganizationCatalogue;
-import version2.catalogue.UserCatalogue;
-import version2.registry.MaterialTypeRegistry;
+import version3.model.catalogue.MaterialsCatalogue;
+import version3.model.catalogue.OrganizationCatalogue;
+import version3.model.catalogue.UserCatalogue;
+import version3.model.registry.MaterialTypeRegistry;
 
 /**
  * 

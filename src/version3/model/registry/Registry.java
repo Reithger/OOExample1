@@ -1,4 +1,4 @@
-package version2.registry;
+package version3.model.registry;
 
 import java.util.HashMap;
 

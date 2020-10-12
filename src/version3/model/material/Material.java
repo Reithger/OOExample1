@@ -1,6 +1,6 @@
-package version2.material;
+package version3.model.material;
 
-import version2.catalogue.CatalogueItem;
+import version3.model.catalogue.CatalogueItem;
 
 /**
  * This class extends the CatalogueItem abstract class to model a Material object in the
@@ -99,10 +99,13 @@ public class Material extends CatalogueItem{
 	/**
 	 * Getter method to request how many days have passed (rounded) since this Material was checked out
 	 * 
-	 * @return - Returns an int value representing how many days this Material has been checked out for
+	 * @return - Returns an int value representing how many days this Material has been checked out for, or -1 if it is available
 	 */
 	
 	public int getDaysCheckedOut() {
+		if(checkedOut == null) {
+			return -1;
+		}
 		return checkedOut.elapsedTimeDays();
 	}
 	

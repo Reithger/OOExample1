@@ -1,7 +1,7 @@
-package version2.catalogue;
+package version3.model.catalogue;
 
 import java.util.ArrayList;
-import version2.user.User;
+import version3.model.user.User;
 
 /**
  * This class extends the Catalogue abstract class to provide a catalogue of the User objects that are associated
@@ -28,6 +28,7 @@ public class UserCatalogue extends Catalogue{
 	 */
 	
 	public UserCatalogue(int maxCheckout) {
+		super();
 		MAX_CHECKOUT = maxCheckout;
 	}
 	

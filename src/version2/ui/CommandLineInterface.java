@@ -7,17 +7,33 @@ import version2.material.Material;
 import version2.organization.Organization;
 import version2.user.User;
 
+/**
+ * This static class handles the UI component of the project, being given a Library object whose information
+ * it displays as directed to by user input.
+ * 
+ * Currently tightly coupled to the Model because it directly references/uses objects from the Model; proper
+ * Model - View - Controller architecture would place a Controller interface between this and the Model, whereby
+ * the Controller processes the Model into a generic data format (like, Strings) that the View is programmed to interpret.
+ * 
+ * Also tightly coupled because this class directly manipulates the state of the Library object
+ * 
+ * @author Ada Clevinger
+ * @version 2.0
+ *
+ */
+
 public class CommandLineInterface {
 
 //---  Instance Variables   -------------------------------------------------------------------
 	
+	/** static Library object used to access, display, and manipulate information about the Library*/
 	private static Library library;
 
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * This function creates a UI in the command line terminal for the purposes of showing Model View Controller
-	 * architecture in subsequent updates to this collection of code.
+	 * This static function creates a UI in the command line terminal, allowing the user to view information
+	 * about the Library and provide input to manipulate the Library.
 	 * 
 	 */
 	
@@ -127,6 +143,13 @@ public class CommandLineInterface {
 		sc.close();
 	}
 
+//---  Helper Methods   -----------------------------------------------------------------------
+	
+	/**
+	 * This helper function just automates some output to make it neater to print the user direction text.
+	 * 
+	 */
+	
 	private static void libraryInputCommands() {
 		System.out.println("View:\n - Users\n - Materials\n - Organizations");
 		System.out.println("Add:\n - User\n - Material\n - Organization");
@@ -136,7 +159,14 @@ public class CommandLineInterface {
 		System.out.println("Type 'help' to see these commands again.");
 	}
 
-	public static void printMaterial(Material m) {
+	/**
+	 * This helper function manages the process of taking a Material object and converting it to a textual
+	 * format to display to the user of this program.
+	 * 
+	 * @param m - Material object being displayed to the user visually
+	 */
+	
+	private static void printMaterial(Material m) {
 		if(m == null) {
 			return;
 		}
@@ -145,7 +175,14 @@ public class CommandLineInterface {
 		System.out.println(" - ID: " + m.getId() + ", Type: " + m.getMaterialType() + checkout);
 	}
 
-	public static void printUser(User u) {
+	/**
+	 * This helper function manages the process of taking a User object and converting it to a textual
+	 * format to display to the user of this program.
+	 * 
+	 * @param m - User object being displayed to the user visually
+	 */
+	
+	private static void printUser(User u) {
 		System.out.print(" - ID: " + u.getId() + ", Organization: \"" + u.getOrganization() + "\", Checked Out Materials: ");
 		if(u.getCheckedOut()[0] == -1) {
 			System.out.println("None");
@@ -157,11 +194,25 @@ public class CommandLineInterface {
 		}
 	}
 	
-	public static void printOrganization(Organization o) {
+	/**
+	 * This helper function manages the process of taking a Organization object and converting it to a textual
+	 * format to display to the user of this program.
+	 * 
+	 * @param m - Organization object being displayed to the user visually
+	 */
+	
+	private static void printOrganization(Organization o) {
 		System.out.println(" - ID: " + o.getId() + ", Title: " + o.getName() + ", Fines: $" + o.getFines());
 	}
 	
 //---  Setter Methods   -----------------------------------------------------------------------
+	
+	/**
+	 * This static function assigns a Library object to the CommandLineInterface class so that it has some
+	 * data to reference when providing an interface to the user to manipulate a Library.
+	 * 
+	 * @param assign - Library object that this CommandLineInterface static class will display information about and manipulate
+	 */
 	
 	public static void assignLibrary(Library assign) {
 		library = assign;

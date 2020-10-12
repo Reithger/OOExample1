@@ -1,10 +1,11 @@
-package version2.test;
+package version3.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-import version2.library.Library;
-import version2.registry.MaterialTypeRegistry;
-import version2.ui.CommandLineInterface;
+
+import version3.controller.MainController;
+import version3.model.library.Library;
+import version3.model.registry.MaterialTypeRegistry;
 
 /**
  * 
@@ -14,7 +15,7 @@ import version2.ui.CommandLineInterface;
  * Using JUnit tests requires that your project have imported the 'JUnit 5' library in your classpath. Eclipse is able to automatically import
  * it if you create a class that is a JUnit Test (new > Other > Java > JUnit) and accept the prompt to import it.
  * 
- * As of v2.0, these tests are largely unchanged besides how we initiate some starting data for the system; this made ensuring that the program
+ * As of v3.0, these tests are largely unchanged besides how we initiate some starting data for the system; this made ensuring that the program
  * works very easy as it quickly identified where functionality was broken.
  * 
  * @author Ada Clevinger
@@ -126,8 +127,8 @@ class JUnitTest {
 		
 		//And this starts up the CLI UI so you can interact with the program
 		
-		CommandLineInterface.assignLibrary(instance);
-		CommandLineInterface.displayLibrary();
+		MainController mc = new MainController(instance);
+		
 	}
 
 }
