@@ -2,6 +2,12 @@ This project is an ongoing example of how to implement a specification for a pro
 
 At each step a new UML diagram will be generated to describe the state of the program as is, alongside a general explanation of what decisions were made and why.
 
+Version 1 is an example of this project done by using a single class.
+
+Version 2 creates a Class architecture, adapting the version 1 Class into several packages to achieve a more Object Oriented design.
+
+Version 3 further adapts the project to enforce a Model View Controller architecture on the previously redesigned project.
+
 This project is meant to be a supplemental learning tool for Object Oriented Design (Comp-3721) at Mount Allison University for the Fall semester of 2020.
 
 All work here is done by Ada Clevinger and overseen by the class' professor, Dr. Ricker.
