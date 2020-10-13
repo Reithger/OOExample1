@@ -1,0 +1,54 @@
+Please refer to the UML diagram generated to compare this version of the program (v3.0) with the previous version of the program (v2.0).
+
+Please also note the comments in each class that explain the operation details and justifications for the Class and its overall structure.
+
+As can easily be noted, the architecture has been updated, most notably by the architectural change to have a model, view, and controller package into which
+all classes and sub-packages have been added.
+
+Due to the successes of the refactoring to reach v2.0 of this project, despite the CommandLineInterface Class directly accessing Model objects, the Model
+was able to be left largely untouched while a Controller and View were properly developed.
+
+The CommandLineInterface Class had previously held the main loop that ran the program so long as the input did not instruct the program to end, but handling input
+is now the responsibility of the Controller so that entire switch() structure was pulled out and adapted for the Controller (originally into the main-loop of MainController
+but later pulled out again into the InterpretInput Class in the controller package to reduce complexity in MainController).
+
+This left the only Class in our View, CommandLineInterface, as having a sole responsibility: to contain the rules regarding how to draw specific elements of the Model.
+
+However, the View could no longer take Model objects to do this, so an intermediary was necessary to convert the Model to a generic format that the View could make use of.
+
+I needed a generic data structure to use, and preferably one that was easy to use and easy to look at, so I added the DisplayFormat Class that serves as a light harness
+around an ArrayList<String> object that another Class, ConvertModel, could generate from Model objects and give to the View. These two Classes shared a similar responsibility,
+so I made a sub-package within the controller package called 'conversion' (so to access these classes, 'import controller.conversion.className'; in this specific project, due
+to me storing all versions adjacently in my /src/ folder, the full path would be 'version3.controller.conversion.className').
+
+So our controller package contains MainController and InterpretInput, with a sub-package conversion that contains ConvertModel and DisplayFormat. This represents all of the
+responsibilities of your Controller distributed across several packages to avoid having a bloated class and making identifying where to change things if I wanted to, say,
+add additional input functionality much easier. I can also see in my UML exactly how my View and Model connect to my Controller and see how they are relying on one another.
+
+The point of contact in my Model comes from Library, though the User, Material, and Organization Classes do connect to ConvertModel because it contains specific rules for
+converting these objects to a DisplayFormay object. Otherwise, Library contains relevant functions for accessing data structures that need to be converted to DisplayFormat
+objects, as well as the functions for manipulating Library data in the ways permitted by the current UI functionality.
+
+So, we see the basic Model View Controller architecture here: after Controller has established the Model and View, it serves as an intermediary for delivering commands for
+manipulating the Model data and processing Model data so the View can display it to the user. Due to this being a Command Line Interface, the usual process of passing
+input from View -> Controller -> Model at which point any changes in the Model would require updating in the View a la Model -> Controller -> View is not present, there
+instead being a Controller -> Model and Controller -> View relationship due to the insufficient complexity for there to be more autonomy in the View, which is a project
+specific problem to deal with in our architecture.
+
+And we're done! For context, v1.0 was written up weeks ago (writing this October 12'th) but the refactoring to produce v2.0 was done this previous Saturday and Sunday (Oct 11, 12)
+over about 8 hours (including commenting and the prolonged considerations of how to design it, the complexity of which is clear in the relative length of my v2.0 Justification
+file), while v3.0 was done on Sunday and Monday over about 6 hours. Interspersed in there is also some side-development of a program I wrote to automatically generate UML
+diagrams to help me keep up with my architecture, though most of that work was done in the week prior to this sudden flash-refactoring project.
+
+YOUR GAME WILL LOOK DIFFERENT FROM THIS. This is not an architecture we are prescribing you to use, this is an example of how to adapt a problem into a bad solution, the bad
+solution into a bad project, and a bad project into a good project.  v1.0 -> v2.0 was all about pulling Classes out of a bloated Class to distribute responsibility and
+create some structure that would allow further development, and v2.0 -> v3.0 was about enforcing a Model View Controller architecture that has given use explicit patterns
+on which we can develop our View or Model independent of one another.
+
+Also, please look up Java packages if you have not before, they are very useful for managing your project.
+
+And also please note that the UMLs I generated were made automatically, and there are some teething issues in my program; the arrows on the lines are meaningless (the lines
+connecting Classes are correct to show there is a relationship, but the arrowheads are arbitrary) and a peculiar thing in Java is that Classes in the same package don't
+have to explicitly import one another to be able to use each other, so there are cases of Classes within the same package not showing a dependency which does exist between
+them. However, the UMLs do show the package hierarchy of the Classes, so you can assume Classes in the same package have some relation to each other and check the Class
+to see what kind of relationship that is.

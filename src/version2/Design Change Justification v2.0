@@ -1,0 +1,96 @@
+Please refer to the UML diagram generated to compare this version of the program (v2.0) with the previous version of the program (v1.1).
+
+As can easily be noted, the architecture has been complicated a great deal, but this new structure is representative of the behaviors and
+responsibilities that were already present but shoved into a single, messy class.
+
+The first changes that were made were to replace the HashMap<Integer, ArrayList<String>> structures used to manage the Users and Materials
+(as well as the Organizations, which was a HashMap<String, Integer> as it managed the fines). This also allowed the distribution of information
+regarding the specific types of Materials and what each index of the ArrayList<String> represented that were stored as constant values in the
+Library class.
+
+This change was made because we previously had to perform an onerous task of first requesting the ArrayList<String> from the HashMap and then
+index the value we wanted from it, making the program error prone in case the wrong index was accidentally used or the pattern of data within
+the ArrayList ever changed. Many functions and reference would need to change if more information was stored within these ArrayLists, as well
+as more Constant values being necessary to continue referencing them.
+
+While it is the case that the Library is responsible to manage the Users, Materials, and Organizations, the Library class is a central processing
+point that should abstract the details away to lighten its load and make high-level development of the program easier, and thus quicker.
+
+Instead we have introduced a design structure to manage this information that is unique to its encompassing Library: the Catalogue abstract class.
+This class now contains the HashMap<int, CatalogueItem> instance variable with associated functions getResource(int id) and addResource(CatalogueItem)
+to provide an easy-to-use interface for accessing the contents of the Catalogue. The contents of the Catalogue can be varied so long as the objects
+this class stores extend the abstract class CatalogueItem, which the new User, Material, and Organization classes do so that we can make subclasses
+of Catalogue for managing each of these.
+
+Raw types were initially used, whereby a raw type <T extends CatalogueItem> would have been used with a single Catalogue class (not abstract), but
+issues that arose with its use in other classes disincentivized me from wanting its inclusion so I have instead made subclasses for each User, Material,
+and Organization Catalogue. This is because the getResource(int id) function will return the Catalogue contents which are CatalogueItem objects, which
+Java will not automatically cast to children classes of that abstract class CatalogueItem, so to be able to perform that cast and to provide clear
+function names for accessing the data types, each subclass has a getUser(...), getMaterial(...), and getOrganization(...) function that makes use of
+getResource(int id) but provides a harness around it to perform the cast (so 'return (User)getResource(id);', for example.
+
+Having specific classes for each kind of Catalogue also allows for further responsibilities to be isolated in these classes, such as performing verification
+checks for whether or not a Material can be checked out by a User and then performing that checkout process for changing the state of the User and Material
+class in response. While Catalogue could have an abstract function that each Catalogue overrides for this, the clarity of function names for what each
+verification is doing was preferred, as well as the fact that Catalogue does not inherently have a responsibility for verifying that a Material can be
+checked out of the library; it is more generic than that.
+
+CatalogueItem is an abstract class that simply stores an int value for reference in a Catalogue and provides a function for accessing that int id value,
+so that the act of accessing the contents of a Catalogue can expect the behavior of these functions to be regular and correct (while a class could
+override getId() to return a value that is not its associated id, that would be an error in its usage by the programmer unless for a very specific purpose.)
+
+Similar to Catalogue, we also have a Registry class that provides a service which, at first, may be confused as a redundancy of Catalogue, but is
+differentiated by a very important point: the Registry class uses static methods for managing its contents that are stored in a HashMap<String, RegistryItem>.
+RegistryItem is basically a CatalogueItem but its 'id' being a String 'name' instead. This is because a Registry has been interpreted as having a different
+use case than Catalogues, which was born out of complications in making the Material class.
+
+Material was initially conceived as an abstract class that would have Book, Journal, and DVD subclasses, Material storing data on the type name, checkout time
+limit, and overdue fees as well as its unique id value (as it does extend CatalogueItem to manage its inclusion in a Catalogue). However, this required that
+its subclasses store the type name, checkout time limit, and overdue fees as Constant values which it would then provide to its parent class to store as
+instance variables, thus storing the same information twice and confusing the point of even initializing those values if they would inherit the functions
+to 'get' each of those values when it was already in the class.
+
+However, Book, Journal, and DVD functioned basically identically, so there was a clear relationship that demanded some bit of clever programming to avoid
+repetition in behaviors; inheriting an abstract class wasn't it, though. The realization came that all these classes were doing was storing three bits of
+information to provide elsewhere, and they didn't really have new behaviors to express through a subclass, so a MaterialType class was made that would
+assign those values during instantiation and thus make the type of material in a library generic and flexible to having more added easily (through creation
+of a new MaterialType object and addition of it to: MaterialTypeRegistry).
+
+So a Material has its id and a MaterialType associated to it (as well as a CheckoutTime to do the math on how long its been checked out), but a new MaterialType
+shouldn't be generated for each Material; that information is universal and constant across instances of that MaterialType: thus, static access and storage of it
+was desired that allowed access of a MaterialType through reference by the String name of that MaterialType (as opposed to the previous int value to index three
+arrays that stored each of these data values). While a complication could arise from a Library having personalized checkout time limits/overdue fees, the 'library'
+of MaterialTypes was seen as universal and best accessed statically instead of by having the Library possess the MaterialType registry.
+
+So Registry exists as a counterpart to Catalogue that contains universal metadata about the Materials stored within a Library, and MaterialTypeRegistry extends
+that abstract class to provide convenient functions related to MaterialTypes. This does require a meta-actor to initiaize the MaterialTypeRegistry with data
+types for testing purposes, but otherwise could be done at run-time if functionality for doing so was added in the UI (it currently is not as it is not a part
+of the specification and I don't want to do it right now).
+
+All subclasses of Registry and Catalogue also have a function (as a matter of chance and not constraint by their parent class) to create an object of the type that
+they store so that calling classes never have to manage the objects the Catalogues/Registries store; the Catalogue/Registry serves as an intermediary for dealing with
+the objects that they store, so Library is entirely divorced from User, Material, Organization, and MaterialType through the compileMaterial, compileUser, etc. functions.
+This also allows for abstractions of responsibility so Library can call a function such as checkoutMaterial(int userId, int materialId) and never have to see the details
+of those classes or that process.
+
+User, Material, and Organization function pretty well to the same as they did in their non-abstracted forms from v1.1, just having dedicated functions for information access
+and manipulation rather than an extended process of accessing and reassigning their data.
+
+The function displayLibrary() was pulled out of Library and put into its own class CommandLineInterface that takes a static reference to the in-use Library object to
+request information from it when printing the GUI to the user; this was done to cut down on the size of Library and does represent a Model - View split without any kind
+of Controller in sight. The separation also allowed for the inclusion of helper functions without bloating Library, isolating points of responsibility for the rules on
+printing User, Material, and Organization objects. Because this View directly relies on calling functions in objects from the Model, they are tightly bound and changing
+the Model (such as removing a function) could cause the View to also break; we want to avoid this, so we will see a Model - View - Controller architecture soon that contends
+with that separation.
+
+And that's the description, justification, and explanation of the architecture of this project in v2.0! Some points of design are a bit iffy; User contains reference information
+to Material and Organization objects but not the objects themselves to cut down on how closely tied those classes are, but this required the stringent definiton of a User as just
+being reference data the Library keeps and complicated some processes. I feel it is justified by the argument of User being a line in a SQL table, basically, but consistency between
+this and Material re: MaterialType is then lacking; shouldn't Material just contain the String name to access MaterialType? How much work would this cause for the MaterialCatalogue
+class? Are my classes still too tightly bound in my UML?
+
+Design is about compromises and making choices that aren't correct because there is no 'best' or 'correct' choice (but there are many 'wrong' ones!), but you need to be aware
+that you are making these choices and tell us a) that you are making that choice and b) WHY you are making that choice instead of another. Tell us what went wrong and how that
+impacted your final design! We want to see that you are thinking and what you are thinking.
+
+The next justification should be a fair bit shorter as reorganizing for Model - View - Controller should go faster.
