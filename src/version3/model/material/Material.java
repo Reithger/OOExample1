@@ -1,6 +1,7 @@
 package version3.model.material;
 
 import version3.model.catalogue.CatalogueItem;
+import version3.model.material.materialtype.MaterialType;
 
 /**
  * This class extends the CatalogueItem abstract class to model a Material object in the

@@ -1,6 +1,6 @@
-package version3.model.registry;
+package version3.model.material.materialtype;
 
-import version3.model.material.MaterialType;
+import version3.model.registry.Registry;
 
 /**
  * This class extends the abstract class Registry to provide a repository of data

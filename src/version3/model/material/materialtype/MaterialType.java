@@ -1,4 +1,4 @@
-package version3.model.material;
+package version3.model.material.materialtype;
 
 import version3.model.registry.RegistryItem;
 

@@ -1,7 +1,8 @@
-package version3.model.catalogue;
+package version3.model.user;
 
 import java.util.ArrayList;
-import version3.model.user.User;
+
+import version3.model.catalogue.Catalogue;
 
 /**
  * This class extends the Catalogue abstract class to provide a catalogue of the User objects that are associated

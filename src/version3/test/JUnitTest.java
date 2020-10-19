@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import version3.controller.MainController;
 import version3.model.library.Library;
-import version3.model.registry.MaterialTypeRegistry;
+import version3.model.material.materialtype.MaterialTypeRegistry;
 
 /**
  * 

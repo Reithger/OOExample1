@@ -1,10 +1,10 @@
-package version3.model.catalogue;
+package version3.model.material;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import version3.model.material.Material;
-import version3.model.registry.MaterialTypeRegistry;
+import version3.model.catalogue.Catalogue;
+import version3.model.material.materialtype.MaterialTypeRegistry;
 
 /**
  * This class extends the Catalogue abstract class to specify itself as a Catalogue
